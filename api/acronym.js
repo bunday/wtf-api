@@ -108,7 +108,6 @@ router.get("/upload", async function (req, res) {
       } processed Successfully`
     );
   } catch (error) {
-    throw error;
     return sendErrorResponse(req, res, error);
   }
 });
