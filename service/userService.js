@@ -27,6 +27,14 @@ module.exports = {
   generateAccessToken(username) {
     return jwt.sign(username, process.env.TOKEN_SECRET);
   },
+  async validateCredentials(password, hashPassword) {
+    try {
+      const res = await bcrypt.compare(password, hashPassword);
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 const UserModel = require("../model/user");
