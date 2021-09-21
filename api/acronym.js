@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const AcronymService = require("../service/acronymService");
+const sendErrorResponse = require("../service/responseService").sendErrorResponse;
+const sendSuccessResponse = require("../service/responseService").sendSuccessResponse;
 
 // Description: Add a New Acronym
 // req.body -> {title, meaning}
@@ -34,8 +36,17 @@ router.post("/", async function (req, res) {
       });
     }
 
-    // TODO all checks are fine, now we save to the db
+    // all checks are fine, now we save to the db
+    const acronym = await AcronymService.create(data);
+    return sendSuccessResponse(
+      req,
+      res,
+      acronym,
+      "Acronym Created Successfully"
+    );
   } catch (error) {
     return sendErrorResponse(req, res, error);
   }
 });
+
+module.exports = router;

@@ -1,4 +1,16 @@
 module.exports = {
+  create: async function (data) {
+    try {
+      const acronymModel = new AcronymModel();
+      acronymModel.title = data.title;
+      acronymModel.meaning = data.meaning;
+      
+      const acronym = await acronymModel.save();
+      return acronym;
+    } catch (error) {
+      throw error;
+    }
+  },
   async findOneBy({ query }) {
     try {
       if (!query) {
