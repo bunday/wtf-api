@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const AcronymService = require("../service/acronymService");
 
 // Description: Add a New Acronym
 // req.body -> {title, meaning}
@@ -23,6 +24,15 @@ router.post("/", async function (req, res) {
     }
 
     // confirm that the title doesnt exist already
+    const existingAcronym = await AcronymService.findOneBy({
+      title: data.title,
+    });
+    if (existingAcronym) {
+      return sendErrorResponse(req, res, {
+        code: 400,
+        message: "Acronym already exist.",
+      });
+    }
 
     // TODO all checks are fine, now we save to the db
   } catch (error) {
