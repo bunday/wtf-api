@@ -20,10 +20,10 @@ const http = require("http").createServer(app);
 
 app.use(cors());
 
-app.set("port", process.env.PORT || 8080);
+app.set("port", process.env.PORT || 3000);
 
 const server = http.listen(app.get("port"), function () {
-  console.log("Server Started on port " + app.get("port"));
+  console.log(`Server running at port ${app.get("port")}`);
 });
 
 // parse the body to json
