@@ -59,11 +59,19 @@ router.get("/", async function (req, res) {
     const limit = req.query.limit || 10;
     const from = req.query.from || 0;
     const search = req.query.search || "";
-    const acronyms = await AcronymService.findBy(
+
+    // fetch acronyms that fit constraint 
+    const allAcronyms = await AcronymService.findBy(
       { title: { $regex: search, $options: "i" } },
-      limit,
+      0,
       from
     );
+    acronyms = allAcronyms.slice(0, limit) // slice all that satisfy the limit 
+
+    // set response header is limit is less than available acronym
+    res.set('last-page', allAcronyms.length > limit ? false : true);
+    res.set('Access-Control-Expose-Headers', 'last-page')
+
     return sendSuccessResponse(
       req,
       res,
