@@ -52,6 +52,20 @@ router.post("/", async function (req, res) {
   }
 });
 
+router.get("/", async function (req, res) {
+  try {
+    const acronyms = await AcronymService.findBy({}, 0, 0);
+    return sendSuccessResponse(
+      req,
+      res,
+      acronyms,
+      "Acronym Fetched Successfully"
+    );
+  } catch (error) {
+    return sendErrorResponse(req, res, error);
+  }
+});
+
 router.get("/upload", async function (req, res) {
   try {
     // read the existing config file
@@ -60,33 +74,32 @@ router.get("/upload", async function (req, res) {
     uploadedAcronym = 0;
     // loop through each acronym
     acronyms.forEach(async (acronym) => {
-      for (const key in acronym) {
-        // get the key and value pair
-        if (Object.hasOwnProperty.call(acronym, key)) {
-          const meaning = acronym[key];
+      // get the key and value pair
+      const key = Object.keys(acronym)[0];
+      const value = acronym[key];
 
-          // confirm that the title doesnt exist already
-          const existingAcronym = await AcronymService.findOneBy({
-            title: key,
-          });
-          if (!existingAcronym) {
-            // create and increment number of uploaded
-            await AcronymService.create({ title: key, meaning });
-            uploadedAcronym++;
-          }
-        }
+      // confirm that the title doesnt exist already
+      const existingAcronym = await AcronymService.findOneBy({
+        title: key,
+      });
+      if (!existingAcronym) {
+        // create acronym
+        await AcronymService.create({ title: key, meaning: value });
+        uploadedAcronym = uploadedAcronym + 1;
       }
     });
+
     // inform user how many was uploaded
     return sendSuccessResponse(
       req,
       res,
       {},
-      `${uploadedAcronym} Acronym${
-        uploadedAcronym > 1 ? "s" : ""
-      } Uploaded Successfully`
+      `${acronyms.length} Acronym${
+        uploadedAcronym.length > 1 ? "s" : ""
+      } processed Successfully`
     );
   } catch (error) {
+    throw error;
     return sendErrorResponse(req, res, error);
   }
 });
