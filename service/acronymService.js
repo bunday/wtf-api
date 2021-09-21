@@ -76,6 +76,29 @@ module.exports = {
       throw error;
     }
   },
+  deleteOneBy: async function (query) {
+    try {
+      if (!query) {
+        query = {};
+      }
+      if (!query.deleted) query.deleted = false;
+      const acronym = await AcronymModel.findOneAndUpdate(
+        query,
+        {
+          $set: {
+            deleted: true,
+            deletedAt: Date.now(),
+          },
+        },
+        {
+          new: true,
+        }
+      );
+      return acronym;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 const AcronymModel = require("../model/acronym");

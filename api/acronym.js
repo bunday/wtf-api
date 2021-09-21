@@ -55,7 +55,6 @@ router.post("/", async function (req, res) {
 
 router.get("/", async function (req, res) {
   try {
-
     // get the 3 query params and take care of default values
     const limit = req.query.limit || 10;
     const from = req.query.from || 0;
@@ -77,38 +76,66 @@ router.get("/", async function (req, res) {
 });
 
 router.put("/:title", isTokenValid, async function (req, res) {
-    try {
-      const title = req.params.title;
-  
-      // confirm that the title exist 
-      const existingAcronym = await AcronymService.findOneBy({
-        title
+  try {
+    const title = req.params.title;
+
+    // confirm that the title exist
+    const existingAcronym = await AcronymService.findOneBy({
+      title,
+    });
+    if (!existingAcronym) {
+      return sendErrorResponse(req, res, {
+        code: 400,
+        message: "Acronym does not exist.",
       });
-      if (!existingAcronym) {
-        return sendErrorResponse(req, res, {
-          code: 400,
-          message: "Acronym does not exist.",
-        });
-      }
-
-      const data = {
-          title:  req.body.title || existingAcronym.title,
-          meaning:  req.body.meaning || existingAcronym.meaning,
-      }
-
-  
-      // all checks are fine, now we update in the db
-      const acronym = await AcronymService.updateOneBy({title},data);
-      return sendSuccessResponse(
-        req,
-        res,
-        acronym,
-        "Acronym Updated Successfully"
-      );
-    } catch (error) {
-      return sendErrorResponse(req, res, error);
     }
-  });
+
+    const data = {
+      title: req.body.title || existingAcronym.title,
+      meaning: req.body.meaning || existingAcronym.meaning,
+    };
+
+    // all checks are fine, now we update in the db
+    const acronym = await AcronymService.updateOneBy({ title }, data);
+    return sendSuccessResponse(
+      req,
+      res,
+      acronym,
+      "Acronym Updated Successfully"
+    );
+  } catch (error) {
+    return sendErrorResponse(req, res, error);
+  }
+});
+
+router.delete("/:title", isTokenValid, async function (req, res) {
+  try {
+    const title = req.params.title;
+    console.log(title)
+
+    // confirm that the title exist
+    const existingAcronym = await AcronymService.findOneBy({
+      title,
+    });
+    if (!existingAcronym) {
+      return sendErrorResponse(req, res, {
+        code: 400,
+        message: "Acronym does not exist.",
+      });
+    }
+
+    // all checks are fine, now we delete in the db
+    const acronym = await AcronymService.deleteOneBy({ title });
+    return sendSuccessResponse(
+      req,
+      res,
+      acronym,
+      "Acronym Deleted Successfully"
+    );
+  } catch (error) {
+    return sendErrorResponse(req, res, error);
+  }
+});
 
 router.get("/upload", async function (req, res) {
   try {
