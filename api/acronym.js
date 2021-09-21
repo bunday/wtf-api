@@ -6,6 +6,7 @@ const sendErrorResponse =
 const sendSuccessResponse =
   require("../service/responseService").sendSuccessResponse;
 const fs = require("fs");
+const isTokenValid = require("../middleware/auth").isTokenValid;
 
 // Description: Add a New Acronym
 // req.body -> {title, meaning}
@@ -74,6 +75,40 @@ router.get("/", async function (req, res) {
     return sendErrorResponse(req, res, error);
   }
 });
+
+router.put("/:title", isTokenValid, async function (req, res) {
+    try {
+      const title = req.params.title;
+  
+      // confirm that the title exist 
+      const existingAcronym = await AcronymService.findOneBy({
+        title
+      });
+      if (!existingAcronym) {
+        return sendErrorResponse(req, res, {
+          code: 400,
+          message: "Acronym does not exist.",
+        });
+      }
+
+      const data = {
+          title:  req.body.title || existingAcronym.title,
+          meaning:  req.body.meaning || existingAcronym.meaning,
+      }
+
+  
+      // all checks are fine, now we update in the db
+      const acronym = await AcronymService.updateOneBy({title},data);
+      return sendSuccessResponse(
+        req,
+        res,
+        acronym,
+        "Acronym Updated Successfully"
+      );
+    } catch (error) {
+      return sendErrorResponse(req, res, error);
+    }
+  });
 
 router.get("/upload", async function (req, res) {
   try {
