@@ -45,8 +45,6 @@ app.get(["/", "/api"], function (req, res) {
   );
 });
 
-const mongoose = require('./config/db');
-
 module.exports.close = function () {
   server.close();
 };
