@@ -45,6 +45,9 @@ app.get(["/", "/api"], function (req, res) {
   );
 });
 
+// acronym
+app.use(["/acronym", "/api/acronym"], require("./api/acronym"));
+
 module.exports.close = function () {
   server.close();
 };
