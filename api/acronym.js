@@ -54,7 +54,16 @@ router.post("/", async function (req, res) {
 
 router.get("/", async function (req, res) {
   try {
-    const acronyms = await AcronymService.findBy({}, 0, 0);
+
+    // get the 3 query params and take care of default values
+    const limit = req.query.limit || 10;
+    const from = req.query.from || 0;
+    const search = req.query.search || "";
+    const acronyms = await AcronymService.findBy(
+      { title: { $regex: search, $options: "i" } },
+      limit,
+      from
+    );
     return sendSuccessResponse(
       req,
       res,

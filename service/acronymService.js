@@ -12,14 +12,14 @@ module.exports = {
     }
   },
   //Description: Gets all acronym by query.
-  async findBy({ query, limit, skip}) {
+  async findBy(query, limit, from) {
     try {
-      if (!skip) skip = 0;
+      if (!from) from = 0;
 
       if (!limit) limit = 0;
 
-      if (typeof skip === "string") {
-        skip = parseInt(skip);
+      if (typeof from === "string") {
+        from = parseInt(from);
       }
 
       if (typeof limit === "string") {
@@ -36,15 +36,14 @@ module.exports = {
         .lean()
         .sort([["createdAt", -1]])
         .limit(limit)
-        .skip(skip);
+        .skip(from);
 
-      
       return acronyms;
     } catch (error) {
       throw error;
     }
   },
-  async findOneBy( query ) {
+  async findOneBy(query) {
     try {
       if (!query) {
         query = {};
