@@ -51,6 +51,7 @@ app.use(["/acronym", "/api/acronym"], require("./api/acronym"));
 // auth
 app.use(["/auth", "/api/auth"], require("./api/auth"));
 
+module.exports = app;
 module.exports.close = function () {
   server.close();
 };
