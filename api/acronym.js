@@ -1,8 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const AcronymService = require("../service/acronymService");
-const sendErrorResponse = require("../service/responseService").sendErrorResponse;
-const sendSuccessResponse = require("../service/responseService").sendSuccessResponse;
+const sendErrorResponse =
+  require("../service/responseService").sendErrorResponse;
+const sendSuccessResponse =
+  require("../service/responseService").sendSuccessResponse;
+const fs = require("fs");
 
 // Description: Add a New Acronym
 // req.body -> {title, meaning}
@@ -43,6 +46,45 @@ router.post("/", async function (req, res) {
       res,
       acronym,
       "Acronym Created Successfully"
+    );
+  } catch (error) {
+    return sendErrorResponse(req, res, error);
+  }
+});
+
+router.get("/upload", async function (req, res) {
+  try {
+    // read the existing config file
+    const rawdata = fs.readFileSync("./config/acronym.json");
+    const acronyms = JSON.parse(rawdata);
+    uploadedAcronym = 0;
+    // loop through each acronym
+    acronyms.forEach(async (acronym) => {
+      for (const key in acronym) {
+        // get the key and value pair
+        if (Object.hasOwnProperty.call(acronym, key)) {
+          const meaning = acronym[key];
+
+          // confirm that the title doesnt exist already
+          const existingAcronym = await AcronymService.findOneBy({
+            title: key,
+          });
+          if (!existingAcronym) {
+            // create and increment number of uploaded
+            await AcronymService.create({ title: key, meaning });
+            uploadedAcronym++;
+          }
+        }
+      }
+    });
+    // inform user how many was uploaded
+    return sendSuccessResponse(
+      req,
+      res,
+      {},
+      `${uploadedAcronym} Acronym${
+        uploadedAcronym > 1 ? "s" : ""
+      } Uploaded Successfully`
     );
   } catch (error) {
     return sendErrorResponse(req, res, error);
