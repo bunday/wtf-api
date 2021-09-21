@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "cross-env NODE_ENV=development nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "cross-env NODE_ENV=development mocha --exit test/index.js"
   },
   "author": "Zadat Olayinka",
   "license": "ISC",
@@ -20,7 +20,11 @@
     "mongoose": "^6.0.7"
   },
   "devDependencies": {
+    "chai": "^4.3.4",
+    "chai-http": "^4.3.0",
+    "chai-subset": "^1.6.0",
     "custom-env": "^2.0.1",
+    "faker": "^5.5.3",
     "nodemon": "^2.0.12"
   }
 }
